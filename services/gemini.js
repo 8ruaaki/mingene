@@ -56,7 +56,7 @@ IMPORTANT RULES:
 
     try {
       const response = await this.client.models.generateContent({
-        model: 'gemini-3.1-flash-image',
+        model: 'gemini-3.1-flash-lite-image',
         contents: requestContents,
         config: {
           systemInstruction: systemInstruction,

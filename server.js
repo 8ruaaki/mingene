@@ -77,6 +77,12 @@ app.post('/api/generate', async (req, res) => {
     if (!prompt || !prompt.trim()) {
       return res.status(400).json({ error: 'プロンプトを入力してください。' });
     }
+
+    // 日本語が含まれているかチェック
+    if (/[ぁ-んァ-ヶｱ-ﾝﾞﾟ一-龠]/.test(prompt)) {
+      return res.status(400).json({ error: '英語でプロンプトを入力してください。日本語は使用できません。' });
+    }
+
     const result = await geminiService.generateImage(prompt.trim(), previousImage);
 
     if (teamName) {
