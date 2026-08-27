@@ -10,7 +10,7 @@ class DriveService {
   async initialize() {
     // ローカルのuploadsディレクトリを使用
     this.uploadsDir = path.join(__dirname, '..', 'uploads');
-    this.baseUrl = `http://localhost:${process.env.PORT || 3000}/uploads`;
+    this.baseUrl = '/uploads';
 
     // uploadsディレクトリが存在しなければ作成
     if (!fs.existsSync(this.uploadsDir)) {
