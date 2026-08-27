@@ -132,6 +132,33 @@ const App = (() => {
   }
 
   /**
+   * アラートダイアログを表示する
+   * @param {string} title
+   * @param {string} message
+   * @param {string} icon
+   * @returns {Promise<void>}
+   */
+  function showAlertDialog(title, message, icon = '✅') {
+    return new Promise(resolve => {
+      const dialog = document.getElementById('alert-dialog');
+      document.getElementById('alert-title').textContent = title;
+      document.getElementById('alert-message').textContent = message;
+      document.getElementById('alert-icon').textContent = icon;
+      dialog.style.display = 'flex';
+
+      const okBtn = document.getElementById('alert-ok');
+
+      const cleanup = () => {
+        dialog.style.display = 'none';
+        okBtn.removeEventListener('click', onOk);
+      };
+
+      const onOk = () => { cleanup(); resolve(); };
+      okBtn.addEventListener('click', onOk);
+    });
+  }
+
+  /**
    * API リクエストヘルパー
    * @param {string} url
    * @param {object} options
@@ -176,6 +203,7 @@ const App = (() => {
     goHome,
     showToast,
     showConfirmDialog,
+    showAlertDialog,
     apiRequest,
   };
 })();

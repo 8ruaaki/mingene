@@ -108,8 +108,15 @@ const Vote = (() => {
       });
 
       App.showToast(
-        `「${selectedTeam}」に投票しました！（現在 ${result.newCount} 票）`,
+        `「${selectedTeam}」に投票しました！`,
         'success'
+      );
+
+      // アラート表示
+      await App.showAlertDialog(
+        '投票完了！',
+        `「${selectedTeam}」への投票が完了しました！\n（現在 ${result.newCount} 票）`,
+        '🎉'
       );
 
       // 画面をリロード
