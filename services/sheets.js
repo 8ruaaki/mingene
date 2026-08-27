@@ -185,6 +185,50 @@ class SheetsService {
 
     return team?.imageLink || null;
   }
+
+  /**
+   * チームの行の空いている列（D列以降）にプロンプトを保存する
+   * @param {string} teamName
+   * @param {string} prompt
+   */
+  async addPrompt(teamName, prompt) {
+    if (!this.sheets) throw new Error('Sheets API が初期化されていません。');
+
+    const teams = await this.getTeams();
+    const team = teams.find(
+      t => t.teamName.toLowerCase() === teamName.toLowerCase()
+    );
+
+    if (!team) {
+      throw new Error(`チーム "${teamName}" が見つかりません。`);
+    }
+
+    const rowResponse = await this.sheets.spreadsheets.values.get({
+      spreadsheetId: this.spreadsheetId,
+      range: `${this.sheetName}!A${team.row}:ZZ${team.row}`,
+    });
+
+    const rowData = rowResponse.data.values ? rowResponse.data.values[0] : [];
+    
+    // 最低でもD列 (インデックス3)
+    let nextColIndex = Math.max(3, rowData.length);
+    
+    let column = '';
+    let temp = nextColIndex;
+    while (temp >= 0) {
+      column = String.fromCharCode((temp % 26) + 65) + column;
+      temp = Math.floor(temp / 26) - 1;
+    }
+
+    await this.sheets.spreadsheets.values.update({
+      spreadsheetId: this.spreadsheetId,
+      range: `${this.sheetName}!${column}${team.row}`,
+      valueInputOption: 'USER_ENTERED',
+      requestBody: {
+        values: [[prompt]],
+      },
+    });
+  }
 }
 
 module.exports = new SheetsService();

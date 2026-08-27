@@ -73,11 +73,20 @@ app.get('/api/teams', async (req, res) => {
  */
 app.post('/api/generate', async (req, res) => {
   try {
-    const { prompt } = req.body;
+    const { prompt, teamName, previousImage } = req.body;
     if (!prompt || !prompt.trim()) {
       return res.status(400).json({ error: 'プロンプトを入力してください。' });
     }
-    const result = await geminiService.generateImage(prompt.trim());
+    const result = await geminiService.generateImage(prompt.trim(), previousImage);
+
+    if (teamName) {
+      try {
+        await sheetsService.addPrompt(teamName.trim(), prompt.trim());
+      } catch (err) {
+        console.error('[API] プロンプト保存エラー:', err);
+      }
+    }
+
     res.json({
       success: true,
       imageBase64: result.imageBase64,

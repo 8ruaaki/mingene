@@ -91,7 +91,7 @@
         <!-- 下部：プロンプト入力 -->
         <div class="prompt-bar">
           <div class="prompt-input-wrap">
-            <input type="text" id="prompt-input" placeholder="Describe the image in English... (e.g., A cat sitting on a red chair)" autocomplete="off">
+            <textarea id="prompt-input" placeholder="Describe the image in English... (e.g., A cat sitting on a red chair)" autocomplete="off"></textarea>
             <div class="prompt-actions">
               <button id="btn-generate" class="btn btn-accent">
                 <span class="btn-icon">⚡</span> 生成
@@ -182,6 +182,11 @@
         <div class="vote-header">
           <h1><span class="vote-icon">🗳️</span> 投票</h1>
           <p class="vote-description">最も良いと思う画像を1つ選んで投票してください。</p>
+          <div style="margin-top: var(--space-md);">
+            <button id="btn-reload-votes" class="btn btn-outline" style="padding: var(--space-sm) var(--space-md); font-size: var(--font-size-sm);">
+              <span class="btn-icon">🔄</span> 最新の画像を読み込む
+            </button>
+          </div>
         </div>
 
         <div id="vote-loading" class="vote-loading">
@@ -199,9 +204,6 @@
         <div class="vote-actions">
           <button id="btn-vote" class="btn btn-accent btn-lg" disabled>
             <span class="btn-icon">🗳️</span> 投票する
-          </button>
-          <button id="vote-home" class="btn btn-ghost">
-            <span class="btn-icon">🏠</span> ホームに戻る
           </button>
         </div>
       </div>

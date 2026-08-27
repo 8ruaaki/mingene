@@ -21,7 +21,10 @@ const Generate = (() => {
     // 画面② - 生成ボタン
     document.getElementById('btn-generate').addEventListener('click', handleGenerate);
     document.getElementById('prompt-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter') handleGenerate();
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleGenerate();
+      }
     });
 
     // 画面② - 次へボタン
@@ -98,9 +101,14 @@ const Generate = (() => {
     placeholder.style.display = 'none';
 
     try {
+      const requestBody = { prompt, teamName };
+      if (generatedImageData) {
+        requestBody.previousImage = generatedImageData;
+      }
+
       const result = await App.apiRequest('/api/generate', {
         method: 'POST',
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify(requestBody),
       });
 
       // 生成結果を表示

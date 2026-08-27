@@ -10,10 +10,14 @@ const Vote = (() => {
     // 投票ボタン
     document.getElementById('btn-vote').addEventListener('click', handleVote);
 
-    // ホームに戻る
-    document.getElementById('vote-home').addEventListener('click', () => {
-      App.goHome();
-    });
+
+    // リロードボタン
+    const reloadBtn = document.getElementById('btn-reload-votes');
+    if (reloadBtn) {
+      reloadBtn.addEventListener('click', () => {
+        loadSubmissions();
+      });
+    }
   }
 
   /**
