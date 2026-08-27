@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MinGene - 英語授業用 画像生成・提出・投票 Webアプリケーション">
+  <title>MinGene - 英語授業用画像生成アプリ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- ===== 共通ヘッダー ===== -->
+  <header id="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">✦</span>
+        <span class="logo-text">MinGene</span>
+      </div>
+      <nav class="mode-nav">
+        <button id="btn-mode-generate" class="mode-btn active" data-mode="generate">
+          <span class="mode-icon">🎨</span>
+          <span class="mode-label">生成モード</span>
+        </button>
+        <button id="btn-mode-submit" class="mode-btn" data-mode="submit">
+          <span class="mode-icon">📤</span>
+          <span class="mode-label">提出モード</span>
+        </button>
+        <button id="btn-mode-vote" class="mode-btn" data-mode="vote">
+          <span class="mode-icon">🗳️</span>
+          <span class="mode-label">投票モード</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== メインコンテンツ ===== -->
+  <main id="app-main">
+
+    <!-- ===== 生成モード：画面① チーム名入力 ===== -->
+    <section id="generate-screen1" class="screen active">
+      <div class="screen-content centered">
+        <div class="card glass-card card-narrow">
+          <div class="card-icon">🎨</div>
+          <h1>画像生成モード</h1>
+          <p class="card-description">チーム名を入力して、AI画像生成を始めましょう。</p>
+          <div class="input-group">
+            <label for="gen-team-name">チーム名</label>
+            <input type="text" id="gen-team-name" placeholder="例：Team Alpha" autocomplete="off">
+          </div>
+          <button id="gen-next-1" class="btn btn-primary btn-full">
+            <span>次へ</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 生成モード：画面② 画像生成・再現 ===== -->
+    <section id="generate-screen2" class="screen">
+      <div class="screen-content generate-workspace">
+        <!-- 左側：指定画像エリア -->
+        <div class="workspace-left">
+          <div class="image-switch-bar">
+            <button id="ref-img-btn1" class="tab-btn active">画像①</button>
+            <button id="ref-img-btn2" class="tab-btn">画像②</button>
+          </div>
+          <div class="image-display-area" id="reference-area">
+            <img id="reference-image" src="/images/reference1.png" alt="指定画像">
+            <div class="image-label">指定画像（お手本）</div>
+          </div>
+        </div>
+
+        <!-- 右側：生成画像エリア -->
+        <div class="workspace-right">
+          <div class="image-display-area" id="generated-area">
+            <div id="generated-placeholder" class="placeholder-content">
+              <span class="placeholder-icon">✨</span>
+              <p>英語のプロンプトを入力して<br>画像を生成してください</p>
+            </div>
+            <img id="generated-image" src="" alt="生成画像" style="display:none;">
+            <div id="generating-spinner" class="spinner-overlay" style="display:none;">
+              <div class="spinner"></div>
+              <p>画像を生成中...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 下部：プロンプト入力 -->
+        <div class="prompt-bar">
+          <div class="prompt-input-wrap">
+            <input type="text" id="prompt-input" placeholder="Describe the image in English... (e.g., A cat sitting on a red chair)" autocomplete="off">
+            <div class="prompt-actions">
+              <button id="btn-generate" class="btn btn-accent">
+                <span class="btn-icon">⚡</span> 生成
+              </button>
+              <button id="gen-next-2" class="btn btn-primary">
+                次へ <span class="btn-arrow">→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 生成モード：画面③ ダウンロード ===== -->
+    <section id="generate-screen3" class="screen">
+      <div class="screen-content centered">
+        <div class="card glass-card">
+          <div class="card-icon">🎉</div>
+          <h1>画像生成完了！</h1>
+          <p class="card-description">生成した画像をダウンロードできます。</p>
+          <div class="download-preview">
+            <img id="download-preview-img" src="" alt="生成画像プレビュー">
+          </div>
+          <button id="btn-download" class="btn btn-accent btn-full">
+            <span class="btn-icon">⬇️</span> 画像をダウンロード
+          </button>
+          <button id="gen-home" class="btn btn-ghost btn-full">
+            <span class="btn-icon">🏠</span> ホームに戻る
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 提出モード：画面① チーム名確認 ===== -->
+    <section id="submit-screen1" class="screen">
+      <div class="screen-content centered">
+        <div class="card glass-card card-narrow">
+          <div class="card-icon">📤</div>
+          <h1>画像提出モード</h1>
+          <p class="card-description">チーム名を入力して、画像を提出しましょう。</p>
+          <div class="input-group">
+            <label for="sub-team-name">チーム名</label>
+            <input type="text" id="sub-team-name" placeholder="例：Team Alpha" autocomplete="off">
+          </div>
+          <button id="sub-next-1" class="btn btn-primary btn-full">
+            <span>次へ</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 提出モード：画面② 画像アップロード ===== -->
+    <section id="submit-screen2" class="screen">
+      <div class="screen-content centered">
+        <div class="card glass-card card-wide">
+          <div class="card-icon">📎</div>
+          <h1>画像をアップロード</h1>
+          <p class="card-description" id="sub-team-display">チーム: —</p>
+
+          <div id="upload-dropzone" class="dropzone">
+            <div class="dropzone-content" id="dropzone-content">
+              <span class="dropzone-icon">📁</span>
+              <p class="dropzone-text">ここにファイルをドラッグ＆ドロップ</p>
+              <p class="dropzone-sub">または</p>
+              <button type="button" id="btn-file-select" class="btn btn-outline">ファイルを選択</button>
+              <input type="file" id="file-input" accept="image/*" hidden>
+            </div>
+            <div class="dropzone-preview" id="dropzone-preview" style="display:none;">
+              <img id="upload-preview-img" src="" alt="アップロードプレビュー">
+              <button type="button" id="btn-remove-file" class="btn-remove">✕</button>
+            </div>
+          </div>
+
+          <button id="btn-upload" class="btn btn-accent btn-full" disabled>
+            <span class="btn-icon">📤</span> アップロード
+          </button>
+          <button id="sub-home" class="btn btn-ghost btn-full">
+            <span class="btn-icon">🏠</span> ホームに戻る
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 投票モード：画面① ===== -->
+    <section id="vote-screen1" class="screen">
+      <div class="screen-content">
+        <div class="vote-header">
+          <h1><span class="vote-icon">🗳️</span> 投票</h1>
+          <p class="vote-description">最も良いと思う画像を1つ選んで投票してください。</p>
+        </div>
+
+        <div id="vote-loading" class="vote-loading">
+          <div class="spinner"></div>
+          <p>提出画像を読み込み中...</p>
+        </div>
+
+        <div id="vote-empty" class="vote-empty" style="display:none;">
+          <span class="empty-icon">📭</span>
+          <p>まだ提出された画像がありません。</p>
+        </div>
+
+        <form id="vote-form" class="vote-grid" style="display:none;"></form>
+
+        <div class="vote-actions">
+          <button id="btn-vote" class="btn btn-accent btn-lg" disabled>
+            <span class="btn-icon">🗳️</span> 投票する
+          </button>
+          <button id="vote-home" class="btn btn-ghost">
+            <span class="btn-icon">🏠</span> ホームに戻る
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== 確認ダイアログ ===== -->
+  <div id="confirm-dialog" class="dialog-overlay" style="display:none;">
+    <div class="dialog-card glass-card">
+      <div class="dialog-icon">⚠️</div>
+      <h2 id="dialog-title">確認</h2>
+      <p id="dialog-message">上書きしてもよろしいですか？</p>
+      <div class="dialog-actions">
+        <button id="dialog-cancel" class="btn btn-ghost">キャンセル</button>
+        <button id="dialog-confirm" class="btn btn-accent">上書きする</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== トースト通知 ===== -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="/js/app.js"></script>
+  <script src="/js/generate.js"></script>
+  <script src="/js/submit.js"></script>
+  <script src="/js/vote.js"></script>
+
+</body>
+</html>
