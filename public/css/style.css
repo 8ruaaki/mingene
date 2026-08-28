@@ -450,11 +450,12 @@ body::before {
 /* --- Generate Workspace (Screen 2) --- */
 .generate-workspace {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.25fr 1fr; /* 左側（指定画像）を大きく */
   grid-template-rows: 1fr auto;
   gap: var(--space-lg);
   min-height: calc(100vh - var(--header-height));
   padding: var(--space-lg) !important;
+  max-width: 1500px; /* 余白を活用して全体幅を広げる */
 }
 
 .workspace-left,

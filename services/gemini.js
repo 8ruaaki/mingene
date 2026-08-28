@@ -80,7 +80,8 @@ Your task is to generate an image based on the user's English prompt.
 IMPORTANT RULES:
 1. If the prompt contains parts that are NOT complete sentences (e.g., isolated words, fragments), IGNORE those parts and only use the meaningful sentences for image generation.
 2. DO accept and work with prompts that have grammar mistakes or incorrect word usage - generate the image based on the intended meaning.
-3. Generate a high-quality, detailed image that matches the meaningful parts of the prompt.${instructionExtras}`;
+3. Generate a high-quality, detailed image that matches the meaningful parts of the prompt.
+4. ALL generated images MUST be strictly BLACK AND WHITE (grayscale/monochrome). Do not use any colors.${instructionExtras}`;
 
     let requestContents = prompt;
     if (previousImage && previousImage.base64 && previousImage.mimeType) {

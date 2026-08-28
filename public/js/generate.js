@@ -122,6 +122,7 @@ const Generate = (() => {
       generatedImg.style.display = 'block';
 
       App.showToast('画像を生成しました！', 'success');
+      input.value = ''; // プロンプト入力欄を消去
     } catch (error) {
       App.showToast(error.message, 'error');
       placeholder.style.display = 'flex';
@@ -137,6 +138,10 @@ const Generate = (() => {
   function handleGoToDownload() {
     if (!generatedImageData) {
       App.showToast('まず画像を生成してください。', 'warning');
+      return;
+    }
+
+    if (!confirm('生成を終了しますか？')) {
       return;
     }
 
