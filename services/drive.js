@@ -1,101 +1,71 @@
-const fs = require('fs');
-const path = require('path');
-
-class DriveService {
+class ImgBBService {
   constructor() {
-    this.uploadsDir = null;
-    this.baseUrl = null;
+    this.apiKey = null;
   }
 
   async initialize() {
-    // ローカルのuploadsディレクトリを使用
-    this.uploadsDir = path.join(__dirname, '..', 'uploads');
-    this.baseUrl = '/uploads';
-
-    // uploadsディレクトリが存在しなければ作成
-    if (!fs.existsSync(this.uploadsDir)) {
-      fs.mkdirSync(this.uploadsDir, { recursive: true });
+    this.apiKey = process.env.IMGBB_API_KEY;
+    if (!this.apiKey) {
+      console.warn('[Storage] IMGBB_API_KEY が設定されていません。');
+    } else {
+      console.log('[Storage] 初期化完了 (ImgBB API モード)');
     }
-
-    console.log('[Drive] 初期化完了（ローカルストレージモード）');
   }
 
   /**
-   * 画像ファイルをローカルに保存する
+   * 画像ファイルをImgBBに保存する
    * @param {Buffer} fileBuffer - ファイルのバッファ
    * @param {string} fileName - ファイル名
    * @param {string} mimeType - MIMEタイプ
    * @returns {Promise<{fileId: string, webViewLink: string, webContentLink: string}>}
    */
   async uploadFile(fileBuffer, fileName, mimeType) {
-    if (!this.uploadsDir) {
-      throw new Error('Drive サービスが初期化されていません。');
+    if (!this.apiKey) {
+      throw new Error('ImgBB APIキーが設定されていません。.env を確認してください。');
     }
 
-    // ファイル名をサニタイズ
-    const safeFileName = fileName.replace(/[^a-zA-Z0-9_.\-\u3000-\u9FFF]/g, '_');
-    const filePath = path.join(this.uploadsDir, safeFileName);
+    try {
+      console.log(`[Storage] ImgBBへのアップロード開始: ${fileName}`);
+      
+      const base64Image = fileBuffer.toString('base64');
+      
+      const formData = new URLSearchParams();
+      formData.append('image', base64Image);
+      // 拡張子を除いたファイル名を指定
+      formData.append('name', fileName.split('.')[0]);
 
-    // ファイルを保存
-    fs.writeFileSync(filePath, fileBuffer);
-    console.log(`[Drive] ファイル保存: ${safeFileName}`);
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${this.apiKey}`, {
+        method: 'POST',
+        body: formData
+      });
 
-    const webViewLink = `${this.baseUrl}/${safeFileName}`;
+      const result = await response.json();
 
-    return {
-      fileId: safeFileName,
-      webViewLink: webViewLink,
-      webContentLink: webViewLink,
-    };
+      if (!result.success) {
+        throw new Error(result.error?.message || 'ImgBBアップロード失敗');
+      }
+
+      console.log(`[Storage] アップロード完了: ${result.data.url}`);
+
+      return {
+        fileId: result.data.id,
+        webViewLink: result.data.url, // 直接画像のURL
+        webContentLink: result.data.url,
+      };
+    } catch (error) {
+      console.error('[Storage] アップロードエラー:', error.message);
+      throw error;
+    }
   }
 
   /**
-   * 既存ファイルを削除して新しいファイルで置き換える（上書き）
-   * @param {string} existingLink - 既存ファイルのリンク
-   * @param {Buffer} fileBuffer - 新しいファイルのバッファ
-   * @param {string} fileName - ファイル名
-   * @param {string} mimeType - MIMEタイプ
-   * @returns {Promise<{fileId: string, webViewLink: string, webContentLink: string}>}
+   * 既存ファイルがある場合の上書き処理
+   * ImgBBは上書きという概念がないため、単に新しくアップロードして新しいURLを返す
    */
   async replaceFile(existingLink, fileBuffer, fileName, mimeType) {
-    if (!this.uploadsDir) {
-      throw new Error('Drive サービスが初期化されていません。');
-    }
-
-    // 既存ファイルを削除
-    const existingFileName = this.extractFileId(existingLink);
-    if (existingFileName) {
-      const existingPath = path.join(this.uploadsDir, existingFileName);
-      try {
-        if (fs.existsSync(existingPath)) {
-          fs.unlinkSync(existingPath);
-          console.log(`[Drive] 既存ファイル削除: ${existingFileName}`);
-        }
-      } catch (error) {
-        console.warn(`[Drive] 既存ファイル削除失敗: ${error.message}`);
-      }
-    }
-
-    // 新しいファイルをアップロード
+    // 古い画像はそのまま放置（ImgBB側で管理）し、新しい画像をアップロードします
     return this.uploadFile(fileBuffer, fileName, mimeType);
-  }
-
-  /**
-   * ローカルURLからファイル名を抽出する
-   * @param {string} link
-   * @returns {string|null}
-   */
-  extractFileId(link) {
-    if (!link) return null;
-    // ローカルURL: /uploads/filename
-    const match = link.match(/\/uploads\/(.+)$/);
-    if (match) return decodeURIComponent(match[1]);
-
-    // Google Drive リンク（旧データ互換）
-    const driveMatch = link.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) ||
-                       link.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    return driveMatch ? driveMatch[1] : null;
   }
 }
 
-module.exports = new DriveService();
+module.exports = new ImgBBService();
