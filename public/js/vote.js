@@ -18,6 +18,24 @@ const Vote = (() => {
         loadSubmissions();
       });
     }
+
+    // お手本画像の切り替え
+    const refBtn1 = document.getElementById('vote-ref-btn1');
+    const refBtn2 = document.getElementById('vote-ref-btn2');
+    const refImage = document.getElementById('vote-ref-image');
+
+    if (refBtn1 && refBtn2 && refImage) {
+      refBtn1.addEventListener('click', () => {
+        refBtn1.classList.add('active');
+        refBtn2.classList.remove('active');
+        refImage.src = '/images/reference1.png';
+      });
+      refBtn2.addEventListener('click', () => {
+        refBtn2.classList.add('active');
+        refBtn1.classList.remove('active');
+        refImage.src = '/images/reference2.png';
+      });
+    }
   }
 
   /**

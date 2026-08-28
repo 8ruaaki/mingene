@@ -189,6 +189,18 @@
           </div>
         </div>
 
+        <!-- お手本画像表示エリア -->
+        <div class="vote-reference card glass-card" style="margin: 0 auto var(--space-xl); max-width: 800px; padding: var(--space-lg);">
+          <h2 style="font-size: var(--font-size-lg); margin-bottom: var(--space-md);">お手本画像（比較用）</h2>
+          <div class="image-switch-bar" style="justify-content: center; margin-bottom: var(--space-md);">
+            <button id="vote-ref-btn1" class="tab-btn active">画像①</button>
+            <button id="vote-ref-btn2" class="tab-btn">画像②</button>
+          </div>
+          <div class="image-display-area" style="min-height: 300px; max-height: 400px; background: rgba(0,0,0,0.2);">
+            <img id="vote-ref-image" src="/images/reference1.png" alt="お手本画像" style="max-height: 400px; object-fit: contain;">
+          </div>
+        </div>
+
         <div id="vote-loading" class="vote-loading">
           <div class="spinner"></div>
           <p>提出画像を読み込み中...</p>
