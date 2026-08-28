@@ -83,6 +83,12 @@ app.post('/api/generate', async (req, res) => {
       return res.status(400).json({ error: '英語でプロンプトを入力してください。日本語は使用できません。' });
     }
 
+    // 文章としての成立チェック（Gemini Flash）
+    const validation = await geminiService.validatePrompt(prompt.trim());
+    if (!validation.isValid) {
+      return res.status(400).json({ error: validation.reason || '入力内容が単語の羅列になっています。動詞を含めた文章（センテンス）を入力してください。' });
+    }
+
     const result = await geminiService.generateImage(prompt.trim(), previousImage);
 
     if (teamName) {
