@@ -453,7 +453,7 @@ body::before {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr auto;
   gap: var(--space-lg);
-  height: calc(100vh - var(--header-height));
+  min-height: calc(100vh - var(--header-height));
   padding: var(--space-lg) !important;
 }
 
