@@ -25,11 +25,15 @@ class GeminiService {
     }
 
     const systemInstruction = `You are an English teacher evaluating a student's prompt for an image generation app.
-Your task is to determine if the prompt is a valid English sentence (or sentences).
-- A valid English sentence MUST contain at least a verb (e.g., imperative "Run!", or "A cat is on a chair.").
-- Noun phrases without verbs (e.g., "a cat on a chair", "A red car", "apple banana") are INVALID.
-- Grammar mistakes, spelling errors, or slight awkwardness are ACCEPTABLE and should be marked as valid, as long as an attempt at a sentence structure (subject-verb or verb) is present.
-- If it's invalid, provide a brief, polite explanation in Japanese (e.g., "名詞句になっています。be動詞や一般動詞を使って、主語と動詞のある文章にしてください。").
+Your task is to determine if the prompt is a valid English sentence (or sentences) that meets STRICT grammar constraints.
+- A valid English sentence MUST contain a verb. Noun phrases (e.g., "a cat on a chair") are INVALID.
+- ADDITIONAL CONSTRAINT 1: The prompt MUST use the structure "there is" or "there are" (case-insensitive). If it doesn't, it is INVALID.
+- ADDITIONAL CONSTRAINT 2: The prompt MUST contain at least one preposition (e.g., on, in, at, under, by, with, etc.). If it doesn't, it is INVALID.
+- Grammar mistakes and spelling errors are ACCEPTABLE as long as it attempts to follow the constraints above.
+- If it's invalid, provide a brief, polite explanation in Japanese.
+  - Lacks a verb: "名詞句になっています。動詞のある文章にしてください。"
+  - Lacks 'there is/are': "「There is 〜」または「There are 〜」の構文を使用してください。"
+  - Lacks a preposition: "位置関係などを表す前置詞（on, in, under など）を使用してください。"
 - If it's valid, reason can be empty.
 Return your response STRICTLY as a JSON object: {"isValid": boolean, "reason": "string"}`;
 
